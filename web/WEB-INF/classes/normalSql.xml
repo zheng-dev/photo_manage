@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap 
+            PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+            "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="user">
+	
+	
+	<typeAlias alias="giftModel" type="com.gm.expand.bean.GiftModel" />
+	<typeAlias alias="csvOperate" type="com.gm.expand.bean.CSVOperate" />
+	<typeAlias alias="cswarConfig" type="com.gm.expand.bean.CsWarConfigBean" />
+	<typeAlias alias="logConnParam" type="com.gm.expand.bean.GameLogConnParam" />
+	<!--  -->
+	<insert id="insertGift" parameterClass="giftModel">
+	insert into
+	`gift`(`bag_name`,`bag_icon`,`bag_type`,`bag_time`,`remark`,`bag_item_type1`,`bag_item_id_number1`,`type_name1`,`bag_item_type2`,`bag_item_id_number2`,`type_name2`,`bag_item_type3`,`bag_item_id_number3`,`type_name3`,`bag_item_type4`,`bag_item_id_number4`,`type_name4`,`bag_item_type5`,`bag_item_id_number5`,`type_name5`,`bag_item_type6`,`bag_item_id_number6`,`type_name6`,`bag_item_type7`,`bag_item_id_number7`,`type_name7`,`bag_item_type8`,`bag_item_id_number8`,`type_name8`,`bag_item_type9`,`bag_item_id_number9`,`type_name9`,`bag_item_type10`,`bag_item_id_number10`,`type_name10`,`server`,`updatetime`,`bag_type_desc`,`bag_item_type1_desc`,`bag_item_type2_desc`,`bag_item_type3_desc`,`bag_item_type4_desc`,`bag_item_type5_desc`,`bag_item_type6_desc`,`bag_item_type7_desc`,`bag_item_type8_desc`,`bag_item_type9_desc`,`bag_item_type10_desc`)
+	values(#bag_name#,#bag_icon#,#bag_type#,#bag_time#,#remark#,#bag_item_type1#,#bag_item_id_number1#,#type_name1#,#bag_item_type2#,#bag_item_id_number2#,#type_name2#,#bag_item_type3#,#bag_item_id_number3#,#type_name3#,#bag_item_type4#,#bag_item_id_number4#,#type_name4#,#bag_item_type5#,#bag_item_id_number5#,#type_name5#,#bag_item_type6#,#bag_item_id_number6#,#type_name6#,#bag_item_type7#,#bag_item_id_number7#,#type_name7#,#bag_item_type8#,#bag_item_id_number8#,#type_name8#,#bag_item_type9#,#bag_item_id_number9#,#type_name9#,#bag_item_type10#,#bag_item_id_number10#,#type_name10#,#server#,#updatetime#,#bag_type_desc#,#bag_item_type1_desc#,#bag_item_type2_desc#,#bag_item_type3_desc#,#bag_item_type4_desc#,#bag_item_type5_desc#,#bag_item_type6_desc#,#bag_item_type7_desc#,#bag_item_type8_desc#,#bag_item_type9_desc#,#bag_item_type10_desc#)
+	</insert>
+	
+	<select id="getGifBytId" resultClass="java.lang.Integer">
+		<![CDATA[
+		select max(bag_id) id from gift where bag_id < 9999;
+		]]>
+	</select>
+	<select id="showAllGift" resultClass="giftModel">
+		select * from gift
+	</select>
+	
+	<!-- CSV操作 -->
+	<select id="getUserCSVOperate" parameterClass="String" resultClass="csvOperate">
+		select * from csv_operate where cur_csv = #cur_csv#;
+	</select>
+	
+	<!-- CSV操作插入 -->
+	<insert id="insertUserCSVOperate" parameterClass="csvOperate">
+		insert into csv_operate (cur_csv,time) values (#cur_csv#,#time#);
+		<selectKey resultClass="int" keyProperty="id">
+			select last_insert_id() as id;
+		</selectKey>
+	</insert>
+	
+	<!-- 获取跨服战配置信息最大id -->
+	<select id="getMaxIdFromCsWar" resultClass="java.lang.Long">
+		select max(id) from cross_war_config
+	</select>
+	<!-- 插入跨服战配置信息 -->
+	<insert id="insertCswarConfig" parameterClass="cswarConfig">
+		insert into cross_war_config (id,beginTime,group_round,apply_separate,promotion_round,group_separate,local2cross,promotion_separate,iswarmup,
+		crossServer,clientServer,cs_upgrade_last) values (#id#,#beginTime#,#group_round#,#apply_separate#,#promotion_round#,#group_separate#,#local2cross#,#promotion_separate#,#iswarmup#,#crossServer#,#clientServer#,#cs_upgrade_last#);
+		<selectKey resultClass="int" keyProperty="id">
+			select last_insert_id() as id;
+		</selectKey>
+	</insert>
+	<!-- 得到所有游戏日志可用帐号 -->
+	<select id="selectAllFromLogConnParam" resultClass="logConnParam">
+		select * from log_conn_param
+	</select>
+	
+	<!-- 根据权限类型获得可用帐号 -->
+	<select id="selectTypeFromLogConnParam" resultClass="logConnParam" parameterClass="java.lang.String">
+		select * from log_conn_param where type=#type#
+	</select>
+	
+	<!-- 更新游戏日志可用帐号 -->
+	<update id="updateLogConnParam" parameterClass="logConnParam">
+		update log_conn_param set uname=#uname#, password=#password# where type=#type#
+	</update>
+	
+	<!-- 插入游戏日志可用帐号 -->
+	<insert id="insertLogConnParam" parameterClass="logConnParam">
+		insert log_conn_param (type,uname,password) values (#type#,#uname#,#password#)
+	</insert>
+	
+</sqlMap>

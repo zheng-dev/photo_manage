@@ -1,23 +1,22 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="me.dao.VersionDao" %>
 <%@ page import="me.bean.Version" %>
-<%@ page import="java.util.List" %><%--
+<%@ page import="java.io.*,java.util.*,java.sql.*" %>
+<%--
   Created by IntelliJ IDEA.
   User: zzc
   Date: 2017/12/13
   Time: 11:36
   To change this template use File | Settings | File Templates.
 --%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="java.io.*,java.util.*,java.sql.*" %>
-<%@ page import="javax.servlet.http.*,javax.servlet.*" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
 <html>
 <head>
-    <title>main</title>
+    <title>sql_tag</title>
 </head>
 <body>
-<div><h1>main</h1></div>
+<div><h1>sql_tag</h1></div>
 <%
     VersionDao vd = new VersionDao();
     Version vs = vd.getVersion();
@@ -28,11 +27,15 @@
     } else out.println("empty");
     out.println("end");
 
+    ResourceBundle resource = ResourceBundle.getBundle("jdbc");
+    pageContext.setAttribute("passwd", resource.getString("dataSource.password"));
+    pageContext.setAttribute("username", resource.getString("dataSource.username"));
+    pageContext.setAttribute("url", resource.getString("dataSource.url"));
+    pageContext.setAttribute("driver", resource.getString("dataSource.driverClassName"));
 
 %>
-<sql:setDataSource var="snapshot" driver="com.mysql.jdbc.Driver"
-                   url="jdbc:mysql://192.168.5.57:3306/d-game-alpha?useUnicode=true&autoReconnect=true&characterEncoding=utf-8"
-                   user="qlz" password="hae1321sDf223"/>
+<sql:setDataSource var="snapshot" scope="application"
+                   driver="${driver}" url="${url}" user="${username}" password="${pageScope.passwd}"/>
 <sql:query var="result" dataSource="${snapshot}">
     select * from version;
 </sql:query>
@@ -51,9 +54,10 @@
     <table align="center" border="1" width="50%">
         <tr>
             <td>选择要上传的文件:</td>
-            <td><input type="file" name="file"></td>
+            <td><input type="text" name="file"></td>
         </tr>
         <tr>
+            <td></td>
             <td><input type="submit" value="上传"></td>
         </tr>
     </table>
